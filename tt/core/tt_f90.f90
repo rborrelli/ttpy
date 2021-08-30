@@ -307,6 +307,28 @@ contains
     !Later on we will avoid allocation in + and hdm, where the result have a very specific
     !size, i.e., ranks core size can be precomputed
  
+!zztt_dotprod Added by Raffaele Borrelli 15/2/2018
+  subroutine zztt_dotprod(n,d,r1,r2,ps1,ps2,core1,core2,dt,dtsize)
+    implicit none
+    integer, intent(in)  :: d
+    integer, intent(in)  :: dtsize
+    integer, intent(in)  :: n(d)
+    integer, intent(in)  :: r1(d+1)
+    integer, intent(in)  :: r2(d+1)
+    integer, intent(in)  :: ps1(d+1)
+    integer, intent(in)  :: ps2(d+1)
+    complex(8), intent(in) :: core1(:)
+    complex(8), intent(in) :: core2(:)
+    complex(8), intent(out) :: dt(dtsize)
+    type(ztt) :: tt1, tt2
+    call arrays_to_sdv(n,r1,d,ps1,core1,tt1)
+    call arrays_to_sdv(n,r2,d,ps2,core2,tt2)
+    dt = zdot(tt1,tt2)
+    call dealloc(tt1)
+    call dealloc(tt2)
+ end subroutine zztt_dotprod
+
+
  subroutine dtt_hdm(n,d,r1,r2,ps1,ps2,core1,core2,rres,psres)
       integer, intent(in)  :: d
       integer, intent(in)  :: n(d)

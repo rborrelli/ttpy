@@ -494,6 +494,25 @@ class vector(object):
             dt = dt[0]
         return dt
 
+# __zdot__: added by Raffaele Borrelli
+    def __zdot__(self, other):
+        r1 = self.r
+        r2 = other.r
+        d = self.d
+        dt = _np.zeros(r1[0] * r2[0] * r1[d] * r2[d], dtype=_np.complex)
+        dt = _tt_f90.tt_f90.zztt_dotprod(
+            self.n,
+            r1,
+            r2,
+            self.ps,
+            other.ps,
+            self.core + 0j,
+            other.core + 0j,
+            dt.size)
+        if dt.size is 1:
+            dt = dt[0]
+        return dt
+
     def __col__(self, k):
         c = vector()
         d = self.d
