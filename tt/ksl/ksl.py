@@ -62,7 +62,9 @@ def ksl(A, y0, tau, verb=1, scheme='symm', space=8, rmax=2000, use_normest=1):
         0.0
     """
 
-    y0 = y0.round(1e-14)    # This will fix ranks
+# Commented by Raffaele Borrelli 
+# This causes problems when the intial state has a zero imaginary part.
+#    y0 = y0.round(1e-14)    # This will fix ranks
                             # to be no more than maximal reasonable.
                             # Fortran part doesn't  handle excessive ranks
     ry = y0.r.copy()
