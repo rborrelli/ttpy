@@ -102,6 +102,15 @@ class matrix(object):
     def write(self, fname):
         self.tt.write(fname)
 
+# New function read, author: Raffaele Borrelli
+    def read(self, fname):
+        c = matrix()
+        c.tt = self.tt.read(fname)
+        c.n = self.n.copy()
+        c.m = self.m.copy()
+        return c
+###############################
+
     def __repr__(self):
         res = "This is a %d-dimensional matrix \n" % self.tt.d
         r = self.tt.r

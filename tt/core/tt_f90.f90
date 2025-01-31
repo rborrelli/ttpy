@@ -96,6 +96,7 @@ contains
     character(len=*),intent(in) :: fnam
     type(dtt) :: tt
     call read(tt,fnam)
+    d = tt%m
     call sdv_to_arrays(n,r,d,ps,core,tt)
     call dealloc(tt)
   end subroutine dtt_read_wrapper
@@ -111,6 +112,7 @@ contains
     character(len=*),intent(in) :: fnam
     type(ztt) :: tt
     call read(tt,fnam)
+    d = tt%m
     call sdv_to_arrays(n,r,d,ps,zcore,tt)
     call dealloc(tt)
   end subroutine ztt_read_wrapper
@@ -307,7 +309,7 @@ contains
     !Later on we will avoid allocation in + and hdm, where the result have a very specific
     !size, i.e., ranks core size can be precomputed
  
-!zztt_dotprod Added by Raffaele Borrelli 15/2/2018
+!zzt_dotprod Added by Raffaele Borrelli 15/2/2018
   subroutine zztt_dotprod(n,d,r1,r2,ps1,ps2,core1,core2,dt,dtsize)
     implicit none
     integer, intent(in)  :: d

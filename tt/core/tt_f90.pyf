@@ -50,6 +50,24 @@ python module tt_f90 ! in
                 integer, optional,intent(in),check(len(cr)>=crsize),depend(cr) :: crsize=len(cr)
             end subroutine ztt_write_wrapper
             
+            subroutine dtt_read_wrapper(n,r,d,d0,ps,fnam) ! in :tt_f90:tt_f90.f90:tt_f90
+                integer dimension(d0),intent(inout) :: n
+                integer dimension(d0 + 1),intent(inout),depend(d0) :: r
+                integer intent(out) :: d
+                integer, optional,intent(in),check(len(n)>=d0),depend(n) :: d0=len(n)
+                integer dimension(d0 + 1),intent(inout),depend(d0) :: ps
+                character*(*) intent(in) :: fnam
+            end subroutine dtt_read_wrapper
+
+            subroutine ztt_read_wrapper(n,r,d,d0,ps,fnam) ! in :tt_f90:tt_f90.f90:tt_f90
+                integer dimension(d0),intent(inout) :: n
+                integer dimension(d0 + 1),intent(inout),depend(d0) :: r
+                integer intent(out) :: d
+                integer, optional,intent(in),check(len(n)>=d0),depend(n) :: d0=len(n)
+                integer dimension(d0 + 1),intent(inout),depend(d0) :: ps
+                character*(*) intent(in) :: fnam
+            end subroutine ztt_read_wrapper
+
             subroutine dtt_to_full(n,r,d,ps,cr,crsize,a,asize) ! in :tt_f90:tt_f90.f90:tt_f90
                 integer dimension(d),intent(in) :: n
                 integer dimension(d + 1),intent(in),depend(d) :: r

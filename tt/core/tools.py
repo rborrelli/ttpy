@@ -18,7 +18,7 @@ from .utils import my_chop2 as _my_chop2
 # TT-matrix by a TT-vector product
 
 # Available functions:
-# matvec, col, kron, dot, diag, mkron, concatenate, sum, ones, rand, eye,
+# matvec, col, kron, dot, zdot, diag, mkron, concatenate, sum, ones, rand, eye,
 # Toeplitz, qlaplace_dd, xfun, linspace, sin, cos, delta, stepfun, qshift, unit,
 # IpaS, reshape
 
@@ -112,7 +112,7 @@ def matvec(a, b, compression=False):
 #    else:
 #        rb = b.shape[1]
 #    x1 = b.reshape(b.shape[0],rb)
-#    y = _np.zeros(a.n.prod(),dtype=_np.float)
+#    y = _np.zeros(a.n.prod(),dtype=float)
 #    y = mv(a.n,a.m,a.tt.r,a.tt.ps,a.tt.core,x1,a.n.prod())
 #    return y
 
@@ -145,6 +145,18 @@ def dot(a, b):
         raise ValueError(
             'Dot is waiting for two TT-vectors or two TT-    matrices')
 
+# zdot, autor Raffaele Borrelli
+##########################
+def zdot(a, b):
+    """Dot product of two TT-matrices or two TT-vectors"""
+    if hasattr(a, '__zdot__'):
+        return a.__zdot__(b)
+    if a is None:
+        return b
+    else:
+        raise ValueError(
+            'Dot is waiting for two TT-vectors or two TT-    matrices')
+##########################
 
 def diag(a):
     """ Diagonal of a TT-matrix OR diagonal _matrix from a TT-vector."""
@@ -674,12 +686,12 @@ def linspace(n, d=None, a=0.0, b=1.0, right=True, left=True):
 def sin(d, alpha=1.0, phase=0.0):
     """ Create TT-vector for :math:`\\sin(\\alpha n + \\varphi)`."""
     cr = []
-    cur_core = _np.zeros([1, 2, 2], dtype=_np.float)
+    cur_core = _np.zeros([1, 2, 2], dtype=float)
     cur_core[0, 0, :] = [_math.cos(phase), _math.sin(phase)]
     cur_core[0, 1, :] = [_math.cos(alpha + phase), _math.sin(alpha + phase)]
     cr.append(cur_core)
     for i in xrange(1, d - 1):
-        cur_core = _np.zeros([2, 2, 2], dtype=_np.float)
+        cur_core = _np.zeros([2, 2, 2], dtype=float)
         cur_core[0, 0, :] = [1.0, 0.0]
         cur_core[1, 0, :] = [0.0, 1.0]
         cur_core[
@@ -697,7 +709,7 @@ def sin(d, alpha=1.0, phase=0.0):
         :] = [-_math.sin(alpha * 2 ** i),
               _math.cos(alpha * 2 ** i)]
         cr.append(cur_core)
-    cur_core = _np.zeros([2, 2, 1], dtype=_np.float)
+    cur_core = _np.zeros([2, 2, 1], dtype=float)
     cur_core[0, :, 0] = [0.0, _math.sin(alpha * 2 ** (d - 1))]
     cur_core[1, :, 0] = [1.0, _math.cos(alpha * 2 ** (d - 1))]
     cr.append(cur_core)
@@ -797,7 +809,7 @@ def stepfun(n, d=None, center=1, direction=1):
         break_further = max([0] + cind[:i])
         nextrank = 2 if break_further else 1
         one = [1] * n0[i]
-        cr = _np.zeros([nextrank, n0[i], prevrank], dtype=_np.float)
+        cr = _np.zeros([nextrank, n0[i], prevrank], dtype=float)
         tempx = x(cind[i], n0[i])
         tempnotx = notx(cind[i], n0[i])
         # high-conditional magic

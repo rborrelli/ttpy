@@ -201,14 +201,14 @@ class vector(object):
         newcrs = []
         cr = crs[0]
         rl, n, rr = cr.shape
-        newcr = _np.zeros((rl, n, rr * 2), dtype=_np.float)
+        newcr = _np.zeros((rl, n, rr * 2), dtype=float)
         newcr[:, :, :rr] = _np.real(cr)
         newcr[:, :, rr:] = _np.imag(cr)
         newcrs.append(newcr)
         for i in xrange(1, self.d - 1):
             cr = crs[i]
             rl, n, rr = cr.shape
-            newcr = _np.zeros((rl * 2, n, rr * 2), dtype=_np.float)
+            newcr = _np.zeros((rl * 2, n, rr * 2), dtype=float)
             newcr[:rl, :, :rr] = newcr[rl:, :, rr:] = _np.real(cr)
             newcr[:rl, :, rr:] = _np.imag(cr)
             newcr[rl:, :, :rr] = -_np.imag(cr)
@@ -217,33 +217,33 @@ class vector(object):
         rl, n, rr = cr.shape
         if op in ['R', 'r', 'Re']:
             # get real part
-            newcr = _np.zeros((rl * 2, n, rr), dtype=_np.float)
+            newcr = _np.zeros((rl * 2, n, rr), dtype=float)
             newcr[:rl, :, :] = _np.real(cr)
             newcr[rl:, :, :] = -_np.imag(cr)
         elif op in ['I', 'i', 'Im']:
             # get imaginary part
-            newcr = _np.zeros((rl * 2, n, rr), dtype=_np.float)
+            newcr = _np.zeros((rl * 2, n, rr), dtype=float)
             newcr[:rl, :, :] = _np.imag(cr)
             newcr[rl:, :, :] = _np.real(cr)
         elif op in ['A', 'B', 'all', 'both']:
             # get both parts (increase dimensionality)
-            newcr = _np.zeros((rl * 2, n, 2 * rr), dtype=_np.float)
+            newcr = _np.zeros((rl * 2, n, 2 * rr), dtype=float)
             newcr[:rl, :, :rr] = _np.real(cr)
             newcr[rl:, :, :rr] = -_np.imag(cr)
             newcr[:rl, :, rr:] = _np.imag(cr)
             newcr[rl:, :, rr:] = _np.real(cr)
             newcrs.append(newcr)
-            newcr = _np.zeros((rr * 2, 2, 1), dtype=_np.float)
+            newcr = _np.zeros((rr * 2, 2, 1), dtype=float)
             newcr[:rr, 0, :] = newcr[rr:, 1, :] = 1.0
         elif op in ['M']:
             # get matrix modificated for real-arithm. solver
-            newcr = _np.zeros((rl * 2, n, 2 * rr), dtype=_np.float)
+            newcr = _np.zeros((rl * 2, n, 2 * rr), dtype=float)
             newcr[:rl, :, :rr] = _np.real(cr)
             newcr[rl:, :, :rr] = -_np.imag(cr)
             newcr[:rl, :, rr:] = _np.imag(cr)
             newcr[rl:, :, rr:] = _np.real(cr)
             newcrs.append(newcr)
-            newcr = _np.zeros((rr * 2, 4, 1), dtype=_np.float)
+            newcr = _np.zeros((rr * 2, 4, 1), dtype=float)
             newcr[:rr, [0, 3], :] = 1.0
             newcr[rr:, 1, :] = 1.0
             newcr[rr:, 2, :] = -1.0
@@ -293,7 +293,7 @@ class vector(object):
 
         """
         tmp = self.copy()
-        newcore = _np.array(tmp.core, dtype=_np.complex)
+        newcore = _np.array(tmp.core, dtype=complex)
         cr = newcore[tmp.ps[-2] - 1:tmp.ps[-1] - 1]
         cr = cr.reshape((tmp.r[-2], tmp.n[-1], tmp.r[-1]), order='F')
         cr[:, 1, :] *= 1j
@@ -322,6 +322,28 @@ class vector(object):
             _tt_f90.tt_f90.dtt_write_wrapper(
                 self.n, self.r, self.ps, _np.real(
                     self.core), fname)
+
+#author: RB
+    def read(self, fname):
+        print("Read PSI")
+        c = vector()
+        c.n = _np.copy(self.n)
+        c.d = self.d
+        c.r = _np.copy(self.r)
+        c.ps = _np.copy(self.ps)
+        if _np.iscomplexobj(self.core):
+            print("Read ztt")
+            _tt_f90.tt_f90.ztt_read_wrapper(
+                c.n, c.r, c.ps, fname)
+            c.core = _tt_f90.tt_f90.zcore.copy()
+        else:
+            print("Read dtt")
+            _tt_f90.tt_f90.dtt_read_wrapper(
+                c.n, c.r, c.ps, fname)
+            c.core = _tt_f90.tt_f90.core.copy()
+        _tt_f90.tt_f90.tt_dealloc()
+        return c
+
 
     def full(self, asvector=False):
         """Returns full array (uncompressed).
@@ -474,7 +496,7 @@ class vector(object):
         r2 = other.r
         d = self.d
         if (_np.iscomplex(self.core).any() or _np.iscomplex(other.core).any()):
-            dt = _np.zeros(r1[0] * r2[0] * r1[d] * r2[d], dtype=_np.complex)
+            dt = _np.zeros(r1[0] * r2[0] * r1[d] * r2[d], dtype=complex)
             dt = _tt_f90.tt_f90.ztt_dotprod(
                 self.n,
                 r1,
@@ -499,7 +521,7 @@ class vector(object):
         r1 = self.r
         r2 = other.r
         d = self.d
-        dt = _np.zeros(r1[0] * r2[0] * r1[d] * r2[d], dtype=_np.complex)
+        dt = _np.zeros(r1[0] * r2[0] * r1[d] * r2[d], dtype=complex)
         dt = _tt_f90.tt_f90.zztt_dotprod(
             self.n,
             r1,
@@ -573,7 +595,7 @@ class vector(object):
             _np.int32)
 
     def alloc_core(self):
-        self.core = _np.zeros((self.ps[self.d] - 1,), dtype=_np.float)
+        self.core = _np.zeros((self.ps[self.d] - 1,), dtype=float)
 
     def copy(self):
         c = vector()
