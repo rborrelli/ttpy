@@ -3,12 +3,14 @@
 #   See LICENSE for details
 
 from __future__ import print_function, absolute_import
-from distutils.util import get_platform
-from numpy.distutils.misc_util import Configuration, get_info
-from numpy.distutils.core import setup
-from os.path import join
 
 import sys
+
+from os.path import join
+from sys import version_info
+
+from distutils.util import get_platform
+from numpy.distutils.misc_util import Configuration
 
 from tt.distutils import get_extra_fflags
 
@@ -50,11 +52,23 @@ PRINT_SRC = [
 
 
 def configuration(parent_package='', top_path=None):
-    plat_specifier = ".%s-%s" % (get_platform(), sys.version[0:3])
-    inc_dir = ['build/temp%s' % plat_specifier]
+    try:
+        cache_tag = sys.implementation.cache_tag
+    except AttributeError:
+        cache_tag = None
+    platform_tag = get_platform()
+    version_tag = '%s.%s' % version_info[:2]
+
+    # In Python 3.10.6 the way how platform specifier is defined had been
+    # changed. First, Python version were used in platform spec but then it was
+    # replaced with Python implementation name and version (e.g. cpython-310).
+    include_dirs = []
+    for tag in filter(None, [cache_tag, version_tag]):
+        plat_specifier = '.%s-%s' % (platform_tag, tag)
+        include_dirs.append('build/temp' + plat_specifier)
 
     config = Configuration('tt', parent_package, top_path)
-    config.add_include_dirs(inc_dir)
+    config.add_include_dirs(include_dirs)
     config.set_options(
         ignore_setup_xxx_py=True,
         assume_default_configuration=True,
