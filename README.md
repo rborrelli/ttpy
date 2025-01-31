@@ -10,22 +10,6 @@ important packages for working with the TT-format
 in Python. It is able to do TT-interpolation, solve linear systems, eigenproblems, solve dynamical problems. 
 Several computational routines are done in Fortran (which can be used separatedly), and are wrapped with the f2py tool.
 
-Installation
-============
-## Prerequisites
-
-**It is recommended** that you use [Anaconda Python distribution](https://store.continuum.io/cshop/anaconda/) 
-  which has MKL library built-in. Anaconda Python is used for the development  of ttpy.
-
-## Pip install 
-Install dependencies (numpy and cython)
-```
-   conda install numpy cython
-```
-Install ttpy
-```
-   pip install ttpy
-```
 
 ## Installing from source code
 
